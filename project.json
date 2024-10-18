@@ -1,0 +1,18 @@
+{
+	"langrev": "1",
+	"warnings": ["no-unused"],
+	"authors": [],
+	"version": "0.1.0",
+	"features": [],
+	"linked-libraries" : [],
+	"targets": {
+		"main": {
+			"type": "executable",
+			"exec": ["swiftc -emit-object -parse-as-library ../window.swift"],
+			"sources": ["./main.c3", "./scripts/window.o"],
+			"linked-libraries" : ["CoreFoundation.framework", "Cocoa.framework"],
+			"dependencies": []
+		}
+	},
+	"output": "./build"
+}

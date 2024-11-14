@@ -12,6 +12,12 @@
 			"sources": ["./main.c3", "./scripts/window.o"],
 			"linked-libraries" : ["CoreFoundation.framework", "Cocoa.framework"],
 			"dependencies": []
+		},
+		"objc": {
+			"type": "executable",
+			"sources": ["./main.c3"],
+			"linked-libraries" : ["CoreFoundation.framework", "Cocoa.framework"],
+			"dependencies": []
 		}
 	},
 	"output": "./build"

@@ -18,12 +18,16 @@ const BackingStoreType BACKING_STORE_BUFFERED = 2;
 
 def NSApplication = void*;
 def NSWindow = void*;
+def AppWindow = void*;
 
 def MsgSendEmpty = fn void*(void*, ObjcSelector);
 def MsgSendId = fn void*(void*, ObjcSelector, uint);
+def MsgSendPtr = fn void*(void*, ObjcSelector, void*);
 def MsgCreateWindow = fn void*(void*, ObjcSelector, Rect, CInt, CInt, bool);
 
 extern fn ObjcClass allocateClassPair(ObjcClass class, ZString name, int) @extern("objc_allocateClassPair");
+extern fn bool class_addIvar(ObjcClass class, ZString name, int size, int alignment, ZString types) @extern("class_addIvar");
+extern fn ObjcIvar set_instance_variable(ObjcId class, ZString selector, void* value) @extern("object_setInstanceVariable");
 
 fn ObjcId alloc_class(ObjcClass class) => objc::msg_send(class, MsgSendEmpty, "alloc");
 
@@ -42,14 +46,14 @@ fn void! main(String[] args)
 
     int macArgs = WINDOW_STYLE_MASK_TITLED | WINDOW_STYLE_MASK_CLOSABLE | WINDOW_STYLE_MASK_MINIMIZABLE;
 
-    NSApplication ptr = objc::msg_send(objc::class_by_name("NSApplication")!!, MsgSendEmpty, "sharedApplication");
-    objc::msg_send(ptr, MsgSendId, "setActivationPolicy:", 0);
+    NSApplication app = objc::msg_send(objc::class_by_name("NSApplication")!!, MsgSendEmpty, "sharedApplication");
+    objc::msg_send(app, MsgSendId, "setActivationPolicy:", 0);
 
     NSWindow window = objc::msg_send(
                                     alloc_class(objc::class_by_name("NSWindow")!!), 
                                     MsgCreateWindow, 
                                     "initWithContentRect:styleMask:backing:defer:",
-                                    Rect {200, 200, 200, 200},
+                                    Rect {0, 0, 500, 500},
                                     macArgs,
                                     BACKING_STORE_BUFFERED,
                                     false
@@ -62,8 +66,19 @@ fn void! main(String[] args)
     };
 
     ObjcClass delegateClass = allocateClassPair(objc::class_by_name("NSObject")!!, "WindowDelegate", 0);
+    class_addIvar(delegateClass, "RGFW_window", AppWindow.sizeof, AppWindow.sizeof * 4, "L");
 
-    //ObjcId delegate = objc::msg_send(delegateClass, MsgSendEmpty, "init");
-    // Todo objc_allocateClassPair                         
+    ObjcId delegate = objc::msg_send(alloc_class(delegateClass), MsgSendEmpty, "init");
+    defer objc::msg_send(delegate, MsgSendEmpty, "autorelease");
+    set_instance_variable(delegate, "NSWindow", window);
 
+    objc::msg_send(window, MsgSendPtr, "setDelegate:", delegate);
+    objc::msg_send(window, MsgSendId, "setIsVisible:", 1);
+    objc::msg_send(app, MsgSendId, "activateIgnoringOtherApps:", 1);
+    objc::msg_send(app, MsgSendEmpty, "finishLaunching");
+
+    bool running = true;                  
+    while (running) {
+
+    }
 }

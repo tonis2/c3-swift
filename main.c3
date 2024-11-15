@@ -18,10 +18,14 @@ const BackingStoreType BACKING_STORE_BUFFERED = 2;
 
 def NSApplication = void*;
 def NSWindow = void*;
-def Id = void*;
+
 def MsgSendEmpty = fn void*(void*, ObjcSelector);
 def MsgSendId = fn void*(void*, ObjcSelector, uint);
 def MsgCreateWindow = fn void*(void*, ObjcSelector, Rect, CInt, CInt, bool);
+
+extern fn ObjcClass allocateClassPair(ObjcClass class, ZString name, int) @extern("objc_allocateClassPair");
+
+fn ObjcId alloc_class(ObjcClass class) => objc::msg_send(class, MsgSendEmpty, "alloc");
 
 struct Rect {
     CInt x;
@@ -32,18 +36,17 @@ struct Rect {
 
 fn void! main(String[] args)
 {
-    Id poolAlloc = objc::msg_send(objc::class_by_name("NSAutoreleasePool")!!, MsgSendEmpty, "alloc");
-    Id pool = objc::msg_send(poolAlloc, MsgSendEmpty, "init");
+    ObjcId poolAlloc = objc::msg_send(objc::class_by_name("NSAutoreleasePool")!!, MsgSendEmpty, "alloc");
+    ObjcId pool = objc::msg_send(poolAlloc, MsgSendEmpty, "init");
     defer objc::msg_send(pool, MsgSendEmpty, "drain");
 
     int macArgs = WINDOW_STYLE_MASK_TITLED | WINDOW_STYLE_MASK_CLOSABLE | WINDOW_STYLE_MASK_MINIMIZABLE;
 
     NSApplication ptr = objc::msg_send(objc::class_by_name("NSApplication")!!, MsgSendEmpty, "sharedApplication");
     objc::msg_send(ptr, MsgSendId, "setActivationPolicy:", 0);
-    Id window_alloc = objc::msg_send(objc::class_by_name("NSWindow")!!, MsgSendEmpty, "alloc");
 
     NSWindow window = objc::msg_send(
-                                    window_alloc, 
+                                    alloc_class(objc::class_by_name("NSWindow")!!), 
                                     MsgCreateWindow, 
                                     "initWithContentRect:styleMask:backing:defer:",
                                     Rect {200, 200, 200, 200},
@@ -53,8 +56,14 @@ fn void! main(String[] args)
                                     );
 
     defer objc::msg_send(window, MsgSendEmpty, "autorelease");
-    if (window == null) io::printfn("%d", window);
+    if (window == null) {
+        io::printfn("Failed to create window");
+        return;
+    };
 
+    ObjcClass delegateClass = allocateClassPair(objc::class_by_name("NSObject")!!, "WindowDelegate", 0);
+
+    //ObjcId delegate = objc::msg_send(delegateClass, MsgSendEmpty, "init");
     // Todo objc_allocateClassPair                         
 
 }

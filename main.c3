@@ -32,10 +32,10 @@ extern fn ObjcIvar set_instance_variable(ObjcId class, ZString selector, void* v
 fn ObjcId alloc_class(ObjcClass class) => objc::msg_send(class, MsgSendEmpty, "alloc");
 
 struct Rect {
-    CInt x;
-    CInt y;
-    CInt width;
-    CInt height;
+    int x;
+    int y;
+    int width;
+    int height;
 }
 
 fn void! main(String[] args)
@@ -74,6 +74,7 @@ fn void! main(String[] args)
 
     objc::msg_send(window, MsgSendPtr, "setDelegate:", delegate);
     objc::msg_send(window, MsgSendId, "setIsVisible:", 1);
+    objc::msg_send(window, MsgSendPtr, "makeKeyAndOrderFront:", null);
     objc::msg_send(app, MsgSendId, "activateIgnoringOtherApps:", 1);
     objc::msg_send(app, MsgSendEmpty, "finishLaunching");
 

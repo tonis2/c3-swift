@@ -5,11 +5,15 @@
 	"version": "0.1.0",
 	"features": [],
 	"linked-libraries" : [],
+	"script-dir": "scripts",
 	"targets": {
+		"build": {
+			"type": "prepare",
+			"exec": ["gcc -c ./main.m -framework Foundation -framework Cocoa -o ./window.o"]
+		},
 		"main": {
 			"type": "executable",
-			"exec": ["swiftc -emit-object -parse-as-library ../window.swift"],
-			"sources": ["./main.c3", "./scripts/window.o"],
+			"sources": ["./window.c3", "./scripts/window.o"],
 			"linked-libraries" : ["CoreFoundation.framework", "Cocoa.framework"],
 			"dependencies": []
 		},

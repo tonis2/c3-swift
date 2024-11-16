@@ -9,7 +9,9 @@
 	"targets": {
 		"build": {
 			"type": "prepare",
-			"exec": ["gcc -c ./main.m -framework Foundation -framework Cocoa -o ./window.o"]
+			"exec": [
+				"gcc -c ./main.m -framework Foundation -framework Cocoa -fPIC -o ./window.o"
+			]
 		},
 		"main": {
 			"type": "executable",

@@ -1,0 +1,9 @@
+{ 
+    "provides" : "window",
+    "targets" : {
+      "macos-x64" : {
+        "linked-libraries" : ["Cocoa.framework"],
+        "sources" : ["window.c3", "./scripts/window.o"]
+      }
+    }
+  }

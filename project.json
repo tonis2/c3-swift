@@ -5,6 +5,8 @@
 	"version": "0.1.0",
 	"features": [],
 	"linked-libraries" : [],
+	"dependency-search-paths": ["./"],
+	"dependencies": ["window"],
 	"script-dir": "scripts",
 	"targets": {
 		"build": {
@@ -15,7 +17,7 @@
 		},
 		"main": {
 			"type": "executable",
-			"sources": ["./window.c3", "./scripts/window.o"],
+			"sources": ["./main.c3"],
 			"linked-libraries" : ["CoreFoundation.framework", "Cocoa.framework"],
 			"dependencies": []
 		},
